@@ -8,4 +8,10 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0'
 }
 page = requests.get(URL_TEMPLATE, headers=headers)
-print(page.status_code)
+
+soup = bs(page.text, "html.parser")
+groups = soup.find_all('div', class_='gl')
+for group in groups:
+    cars = group.find_all('a')
+    for car in cars:
+        print(car.text)
