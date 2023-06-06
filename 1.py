@@ -17,7 +17,5 @@ groups = soup.find_all('div', class_='gl')
 for group in groups:
     cars = group.find_all('a')
     for car in cars:
-#        print(car.text)
-#        for a in car:
- #           att = a.find_all('div', class_='p')
-  #          print(att.text)
+        price = car.find_all('div', class_='p')[0].text
+        print(price)
