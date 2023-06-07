@@ -19,6 +19,11 @@ df['fuel'] = expanded1[4]
 expanded2 = df['si'].str.split(n=2, expand=True)
 df['unit'] = expanded2[1]
 
-df.drop(['model', 'mileage', 'si'], axis= 1 , inplace= True )
+for ind in df.index:
+    if df['unit'][ind] == 'миль':
+        df['1000*km'][ind] = int(int(df['1000*km'][ind]) * 1.6)
+        print(type(df['1000*km'][ind]))
+
+df.drop(['model', 'mileage', 'si', 'unit'], axis= 1 , inplace= True )
 
 print(df.head(10))
