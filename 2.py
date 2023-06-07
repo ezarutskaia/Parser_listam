@@ -3,10 +3,19 @@ import re
 
 df = pd.read_csv('df.csv', delimiter=',')
 
-search1 = lambda s: s.lstrip("$")
-df['price'] = df['price'].map(search1)
+search = lambda s: s.lstrip("$")
+df['price'] = df['price'].map(search)
 
-search2 = lambda x: x.split(',')
-df['car'] = df['model'].map(search2)
+expanded = df['model'].str.split(pat=',', n=3, expand=True)
+df['car'] = expanded[0]
+df['eng_cap'] = expanded[1]
+df['year'] = expanded[2]
 
-print(df.head(5))
+expanded1 = df['mileage'].str.split(pat=',', n=5, expand=True)
+df['1000*km'] = expanded1[2]
+df['si'] = expanded1[3]
+df['fuel'] = expanded1[4]
+
+df.drop(['model', 'mileage'], axis= 1 , inplace= True )
+
+print(df.head(10))
