@@ -12,10 +12,15 @@ cookes = {
 }
 page = requests.get(URL_TEMPLATE, headers=headers, cookies=cookes)
 
+df = pd.DataFrame(columns=['price', 'model', 'mileage'])
+
 soup = bs(page.text, "html.parser")
 groups = soup.find_all('div', class_='gl')
 for group in groups:
     cars = group.find_all('a')
     for car in cars:
-        price = car.find_all('div', class_='p')[0].text
-        print(price)
+        price = car.find_all('div', class_='p')[0]
+        model = car.find_all('div', class_='l')[0]
+        mileage = car.find_all('div', class_='at')[0]
+        df.loc[ len(df.index )] = [price.text, model.text, mileage.text]
+print(df)
