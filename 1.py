@@ -24,3 +24,5 @@ for group in groups:
         mileage = car.find_all('div', class_='at')[0]
         df.loc[ len(df.index )] = [price.text, model.text, mileage.text]
 print(df)
+
+#df.to_csv (r'df.csv', index= False )
