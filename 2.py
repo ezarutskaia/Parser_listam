@@ -16,6 +16,9 @@ df['1000*km'] = expanded1[2]
 df['si'] = expanded1[3]
 df['fuel'] = expanded1[4]
 
-df.drop(['model', 'mileage'], axis= 1 , inplace= True )
+expanded2 = df['si'].str.split(n=2, expand=True)
+df['unit'] = expanded2[1]
+
+df.drop(['model', 'mileage', 'si'], axis= 1 , inplace= True )
 
 print(df.head(10))
