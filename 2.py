@@ -25,7 +25,7 @@ df['unit'] = expanded2[1]
 for ind in df.index:
     if df['unit'][ind] == 'миль':
         df['1000*km'][ind] = int(int(df['1000*km'][ind]) * 1.6)
-        print(type(df['1000*km'][ind]))
+        #print(type(df['1000*km'][ind]))
 
 search2 = lambda x: x.rstrip(" л.")
 df['eng_cap'] = df['eng_cap'].map(search2)
@@ -38,6 +38,6 @@ df.drop(['model', 'mileage', 'si', 'unit'], axis= 1 , inplace= True )
 search4 = lambda x: x if re.search(r"\d{4}", x) else 0
 df['year'] = df['year'].map(search4)
 
-
+df = df[(df['fuel'] == ' Бензин')]
 
 print(df.head(50))
