@@ -39,5 +39,15 @@ search4 = lambda x: x if re.search(r"\d{4}", x) else 0
 df['year'] = df['year'].map(search4)
 
 df = df[(df['fuel'] == ' Бензин')]
+search5 = lambda s: s.strip()
+df['fuel'] = df['fuel'].map(search5)
 
-print(df.head(50))
+df['price'] = df['price'].str.replace(',', '')
+df['price'] = pd.to_numeric(df['price'], errors='coerce')
+df['eng_cap'] = pd.to_numeric(df['eng_cap'], errors='coerce')
+df['year'] = pd.to_numeric(df['year'], errors='coerce')
+df['1000*km'] = pd.to_numeric(df['1000*km'], errors='coerce')
+
+df = df[['price', 'brand', 'car', 'eng_cap', 'year', '1000*km', 'fuel']]
+
+print(df.head(10))
