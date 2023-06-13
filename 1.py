@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup as bs
 import pandas as pd
+import re
 
 URL_TEMPLATE = "https://www.list.am/category/23?n=0&bid=0&price1=&price2=11000&crc=&_a27=0&_a2_1=2007&_a2_2=&_a15=0&_a28_1=&_a28_2=&_a13=2&_a23=0&_a1_1=&_a1_2=150000&_a109=0&_a43=1&_a16=1&_a17=0&_a22=0&_a105=0&_a106=0&_a102=0&_a103=0&_a104=0"
 headers = {
@@ -23,6 +24,53 @@ for group in groups:
         model = car.find_all('div', class_='l')[0]
         mileage = car.find_all('div', class_='at')[0]
         df.loc[ len(df.index )] = [price.text, model.text, mileage.text]
-print(df)
+#print(df)
 
-#df.to_csv (r'df.csv', index= False )
+search1 = lambda s: s.lstrip("$")
+df['price'] = df['price'].map(search1)
+
+expanded = df['model'].str.split(pat=',', n=3, expand=True)
+df['car'] = expanded[0]
+df['eng_cap'] = expanded[1]
+df['year'] = expanded[2]
+
+expanded0 = df['car'].str.split(pat=' ', expand=True)
+df['brand'] = expanded0[0]
+
+expanded1 = df['mileage'].str.split(pat=',', n=5, expand=True)
+df['1000*km'] = expanded1[2]
+df['si'] = expanded1[3]
+df['fuel'] = expanded1[4]
+
+expanded2 = df['si'].str.split(n=2, expand=True)
+df['unit'] = expanded2[1]
+
+for ind in df.index:
+    if df['unit'][ind] == 'миль':
+        df['1000*km'][ind] = int(int(df['1000*km'][ind]) * 1.6)
+        #print(type(df['1000*km'][ind]))
+
+search2 = lambda x: x.rstrip(" л.")
+df['eng_cap'] = df['eng_cap'].map(search2)
+search3 = lambda x: x.rstrip(" г.")
+df['year'] = df['year'].map(search3)
+
+df.drop(['model', 'mileage', 'si', 'unit'], axis= 1 , inplace= True )
+
+
+search4 = lambda x: x if re.search(r"\d{4}", x) else 0
+df['year'] = df['year'].map(search4)
+
+df = df[(df['fuel'] == ' Бензин')]
+search5 = lambda s: s.strip()
+df['fuel'] = df['fuel'].map(search5)
+
+df['price'] = df['price'].str.replace(',', '')
+df['price'] = pd.to_numeric(df['price'], errors='coerce')
+df['eng_cap'] = pd.to_numeric(df['eng_cap'], errors='coerce')
+df['year'] = pd.to_numeric(df['year'], errors='coerce')
+df['1000*km'] = pd.to_numeric(df['1000*km'], errors='coerce')
+
+df = df[['price', 'brand', 'car', 'eng_cap', 'year', '1000*km', 'fuel']]
+
+print(df.head(10))
