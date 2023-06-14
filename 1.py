@@ -4,6 +4,8 @@ import pandas as pd
 import re
 from mysql.connector import connect, Error
 import numpy
+import datetime
+from datetime import date
 
 URL_TEMPLATE = "https://www.list.am/category/23?n=0&bid=0&price1=&price2=11000&crc=&_a27=0&_a2_1=2007&_a2_2=&_a15=0&_a28_1=&_a28_2=&_a13=2&_a23=0&_a1_1=&_a1_2=150000&_a109=0&_a43=1&_a16=1&_a17=0&_a22=0&_a105=0&_a106=0&_a102=0&_a103=0&_a104=0"
 headers = {
@@ -86,8 +88,8 @@ try:
 
         with connection.cursor(buffered=True) as cursor:
             for ind in df.index:
-                query = "INSERT INTO ArmenCar (price, brand, car, eng_cap, year, mileage, fuel) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(query, (df['price'][ind].tolist(), df['brand'][ind], df['car'][ind], df['eng_cap'][ind].tolist(), df['year'][ind].tolist(), df['1000*km'][ind].tolist(), df['fuel'][ind]))
+                query = "INSERT INTO ArmenCar (price, brand, car, eng_cap, year, mileage, fuel, created) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(query, (df['price'][ind].tolist(), df['brand'][ind], df['car'][ind], df['eng_cap'][ind].tolist(), df['year'][ind].tolist(), df['1000*km'][ind].tolist(), df['fuel'][ind], date.today().strftime('%d.%m') ))
                 connection.commit()
                 # , brand, car, eng_cap, year, mileage, fuel
                 # , df['brand'][ind], df['car'][ind], df['eng_cap'][ind], df['year'][ind], df['1000*km'][ind], df['fuel'][ind]
