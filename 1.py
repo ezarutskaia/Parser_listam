@@ -7,6 +7,7 @@ import numpy
 import datetime
 from datetime import date
 import math
+import matplotlib.pyplot as plt
 
 headers = {
     'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
@@ -90,7 +91,7 @@ df['eng_cap'] = df['eng_cap'].map(search6)
 
 df = df[['price', 'brand', 'car', 'eng_cap', 'year', '1000*km', 'fuel']]
 
-print(df.head(10))
+#print(df.head(10))
 
 try:
     with connect(
@@ -115,3 +116,52 @@ except Error as e:
 #df.to_sql(con=sqlalchemy.engine.Connection, name='table_name_for_df', if_exists='replace', flavor='mysql')
 
 #print(df.info())
+
+df = df[df['year'] > 2000]
+n1 = df[df['brand'] == 'Hyundai']
+n2 = df[df['brand'] == 'Kia']
+n3 = df[df['brand'] == 'Mazda']
+
+plt.subplot(221)
+plt.scatter(df['year'], df['price'])
+plt.xlabel('Год')
+plt.ylabel('Цена, $')
+plt.subplot(222)
+plt.scatter(n1['year'], n1['price'])
+plt.xlabel('Год')
+plt.ylabel('Цена, $')
+plt.legend('hyundai', loc=1)
+plt.subplot(223)
+plt.scatter(n2['year'], n2['price'])
+plt.xlabel('Год')
+plt.ylabel('Цена, $')
+plt.legend('kia', loc=1)
+plt.subplot(224)
+plt.scatter(n3['year'], n3['price'])
+plt.xlabel('Год')
+plt.ylabel('Цена, $')
+plt.legend('mazda', loc=1)
+plt.show()
+
+plt.subplot(221)
+plt.scatter(df['1000*km'], df['price'])
+plt.xlabel('Пробег, 1000км')
+plt.ylabel('Цена, $')
+plt.subplot(222)
+plt.scatter(n1['1000*km'], n1['price'])
+plt.xlabel('Пробег, 1000км')
+plt.ylabel('Цена, $')
+plt.legend('hyundai', loc=4)
+plt.subplot(223)
+plt.scatter(n2['1000*km'], n2['price'])
+plt.xlabel('Пробег, 1000км')
+plt.ylabel('Цена, $')
+plt.legend('kia', loc=4)
+plt.subplot(224)
+plt.scatter(n3['1000*km'], n3['price'])
+plt.xlabel('Пробег, 1000км')
+plt.ylabel('Цена, $')
+plt.legend('mazda', loc=4)
+plt.show()
+
+#print(hyundai.head(5))
