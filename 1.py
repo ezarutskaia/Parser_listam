@@ -6,6 +6,7 @@ from mysql.connector import connect, Error
 import numpy
 import datetime
 from datetime import date
+import math
 
 headers = {
     'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
@@ -40,7 +41,7 @@ for n in range(5):
 search1 = lambda s: s.lstrip("$")
 df['price'] = df['price'].map(search1)
 
-expanded = df['model'].str.split(pat=',', n=3, expand=True)
+expanded = df['model'].str.split(pat=',', expand=True)
 df['car'] = expanded[0]
 df['eng_cap'] = expanded[1]
 df['year'] = expanded[2]
@@ -56,6 +57,8 @@ df['fuel'] = expanded1[4]
 expanded2 = df['si'].str.split(n=2, expand=True)
 df['unit'] = expanded2[1]
 
+#print(df)
+
 for ind in df.index:
     if df['unit'][ind] == 'миль':
         df['1000*km'][ind] = int(int(df['1000*km'][ind]) * 1.6)
@@ -63,13 +66,13 @@ for ind in df.index:
 
 search2 = lambda x: x.rstrip(" л.")
 df['eng_cap'] = df['eng_cap'].map(search2)
-search3 = lambda x: x.rstrip(" г.")
+search3 = lambda x:  str(x).rstrip(" г.") if x else 0
 df['year'] = df['year'].map(search3)
 
 df.drop(['model', 'mileage', 'si', 'unit'], axis= 1 , inplace= True )
 
 
-search4 = lambda x: x if re.search(r"\d{4}", x) else 0
+search4 = lambda x: x if re.search(r"\d{4}", str(x)) else 0
 df['year'] = df['year'].map(search4)
 
 df = df[(df['fuel'] == ' Бензин')]
@@ -82,7 +85,12 @@ df['eng_cap'] = pd.to_numeric(df['eng_cap'], errors='coerce')
 df['year'] = pd.to_numeric(df['year'], errors='coerce')
 df['1000*km'] = pd.to_numeric(df['1000*km'], errors='coerce')
 
+search6 = lambda x: 0 if math.isnan(x) else x
+df['eng_cap'] = df['eng_cap'].map(search6)
+
 df = df[['price', 'brand', 'car', 'eng_cap', 'year', '1000*km', 'fuel']]
+
+print(df.head(10))
 
 try:
     with connect(
